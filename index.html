@@ -7,8 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <h1>Star Wars or Baseball Player?</h1>
+ <div id="game-container">
+    <h1>Star Wars or Baseball Player?</h1>
+    
+    <div id="name-entry">
+        <label for="player-name">Enter Your Name:</label>
+        <input type="text" id="player-name" placeholder="Your Name">
+        <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="game" style="display: none;">
         <p id="question">Loading...</p>
         <div id="buttons">
             <button onclick="makeGuess('starwars')">Star Wars</button>
@@ -16,8 +24,12 @@
         </div>
         <p id="result"></p>
         <p id="score">Score: 0</p>
-        <p id="leaderboard">Leaderboard: Loading...</p>
+        
+        <h2>Leaderboard</h2>
+        <ul id="leaderboard"></ul>
     </div>
+</div>
+
 
     <script src="script.js"></script>
 </body>
