@@ -61,7 +61,7 @@ function makeGuess(choice) {
 
     document.getElementById("score").textContent = `Score: ${score}`;
 
-    if (score >= 10 && !sicnarfModeUnlocked) {
+   if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
         unlockSicnarfMode();
     }
 
