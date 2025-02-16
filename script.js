@@ -20,8 +20,26 @@ const baseballNames = [
     "Boof Bonser", "Milton Bradley", "Chicken Wolf", "Cannonball Titcomb", "Orval Overall"
 ];
 
+let playerName = "";
 let score = 0;
 let sicnarfModeUnlocked = false;
+
+// Load leaderboard from local storage
+let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+function startGame() {
+    playerName = document.getElementById("player-name").value.trim();
+    if (playerName === "") {
+        alert("Please enter your name!");
+        return;
+    }
+
+    document.getElementById("name-entry").style.display = "none";
+    document.getElementById("game").style.display = "block";
+
+    setNewQuestion();
+    updateLeaderboard();
+}
 
 function getRandomName() {
     const allNames = [...starWarsNames, ...baseballNames];
@@ -61,10 +79,11 @@ function makeGuess(choice) {
 
     document.getElementById("score").textContent = `Score: ${score}`;
 
-   if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
+    if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
         unlockSicnarfMode();
     }
 
+    updateLeaderboard();
     setNewQuestion();
 }
 
@@ -73,12 +92,23 @@ function unlockSicnarfMode() {
     document.body.classList.add("sicnarf-mode");
     document.getElementById("buttons").innerHTML += `<button onclick="makeGuess('sicnarf')">Sicnarf Loopstok</button>`;
     document.getElementById("result").textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
+}
 
+function updateLeaderboard() {
+    leaderboard.push({ name: playerName, score: score });
+    leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard = leaderboard.slice(0, 10); // Keep only top 10 players
+
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+
+    let leaderboardHTML = "";
+    leaderboard.forEach((entry, index) => {
+        leaderboardHTML += `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`;
+    });
+
+    document.getElementById("leaderboard").innerHTML = leaderboardHTML;
 }
 
 function setNewQuestion() {
     document.getElementById("question").textContent = getRandomName();
 }
-
-// Start the game with a random name
-setNewQuestion();
