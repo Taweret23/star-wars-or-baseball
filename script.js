@@ -72,7 +72,8 @@ function unlockSicnarfMode() {
     sicnarfModeUnlocked = true;
     document.body.classList.add("sicnarf-mode");
     document.getElementById("buttons").innerHTML += `<button onclick="makeGuess('sicnarf')">Sicnarf Loopstok</button>`;
-    document.getElementById("result").textContent = "🔴 SICNARF MODE ACTIVATED 🔴";
+    document.getElementById("result").textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
+
 }
 
 function setNewQuestion() {
