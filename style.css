@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+#game-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+button {
+    font-size: 18px;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#result {
+    font-size: 20px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+#score {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* Sicnarf Loopstok Mode */
+.sicnarf-mode {
+    background: url('sicnarf-loopstok-card.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+.sicnarf-mode h1 {
+    color: yellow;
+}
+
+.sicnarf-mode button {
+    background-color: red;
+    color: white;
+}
