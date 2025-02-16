@@ -1,7 +1,9 @@
+/* 🌙 Global Dark Mode */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f4f4f4;
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
     margin: 0;
     padding: 0;
 }
@@ -10,13 +12,13 @@ body {
     max-width: 600px;
     margin: 50px auto;
     padding: 20px;
-    background: white;
+    background: #1e1e1e; /* Slightly lighter dark background */
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 h1 {
-    color: #333;
+    color: #FFD700; /* Gold title */
 }
 
 button {
@@ -26,35 +28,29 @@ button {
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    background-color: #333;
+    color: white;
+    border: 2px solid #FFD700;
 }
 
 button:hover {
     opacity: 0.8;
 }
 
-#result {
-    font-size: 20px;
-    margin-top: 20px;
-    font-weight: bold;
-}
-
-#score {
-    font-size: 18px;
-    margin-top: 10px;
-}
-
-/* Sicnarf Loopstok Mode */
+/* 🔥 Sicnarf Loopstok Mode */
 .sicnarf-mode {
-    background: url('sicnarf-loopstok-card.jpg') no-repeat center center fixed;
+    background: url('sicnarf.jpeg') no-repeat center center fixed;
     background-size: cover;
-    color: white;
+    color: #FFD700; /* Gold text */
+    text-shadow: 2px 2px 4px black;
 }
 
 .sicnarf-mode h1 {
-    color: yellow;
+    color: #FF4500; /* Bright orange for contrast */
 }
 
 .sicnarf-mode button {
-    background-color: red;
+    background-color: #222; /* Even darker buttons */
     color: white;
+    border: 2px solid #FFD700;
 }
