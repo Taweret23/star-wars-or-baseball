@@ -11,14 +11,39 @@ const firebaseConfig = {
 };
 
 let db;
+
+// Initialize Firebase once the DOM is fully loaded.
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ DOM fully loaded. Initializing Firebase...");
   firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
   console.log("✅ Firebase initialized successfully.");
+  
+  // Start listening for leaderboard updates in real-time.
+  updateLeaderboard();
 });
 
-// Replace "[...]" with your actual lists:
+// Function to update leaderboard in real-time.
+function updateLeaderboard() {
+  db.collection("leaderboard")
+    .orderBy("score", "desc")
+    .limit(10) // Limit to top 10 scores (optional)
+    .onSnapshot((snapshot) => {
+      const leaderboardElement = document.getElementById("leaderboard");
+      leaderboardElement.innerHTML = ""; // Clear existing list
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.name} - ${data.score}`;
+        leaderboardElement.appendChild(li);
+      });
+    }, (error) => {
+      console.error("Error updating leaderboard:", error);
+    });
+}
+
+// Lists for names
 const starWarsNames = [
   "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
   "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
@@ -63,6 +88,7 @@ function startGame() {
   document.getElementById("game").style.display = "block";
   document.getElementById("buttons").style.display = "block";
 
+  // Reset and shuffle names.
   namePool = [...starWarsNames, ...baseballNames];
   shuffleNames();
   console.log("🎲 Names shuffled. Total names:", namePool.length);
@@ -87,7 +113,7 @@ function getRandomName() {
 function setNewQuestion() {
   let newName = getRandomName();
   if (!newName) {
-    // endGame() is already called in getRandomName
+    // endGame() has been triggered in getRandomName.
     return;
   }
   document.getElementById("question").textContent = newName;
@@ -111,7 +137,7 @@ function makeGuess(choice) {
     document.getElementById("result").textContent = "✅ Correct!";
     score++;
 
-    // Check for Sicnarf mode unlock
+    // Activate Sicnarf mode if conditions are met.
     if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
       activateSicnarfMode();
     }
@@ -130,15 +156,16 @@ function makeGuess(choice) {
 function activateSicnarfMode() {
   sicnarfModeUnlocked = true;
   console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
-  // Launch confetti
+
+  // Launch confetti effect.
   confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
 
-  // Change background
+  // Change background to Sicnarf-themed image.
   document.body.style.backgroundImage = "url('sicnarf.jpeg')";
   document.body.style.backgroundSize = "cover";
   document.body.style.backgroundPosition = "center";
 
-  // Add a special button
+  // Create and add a special button for Sicnarf mode.
   let sicnarfButton = document.createElement("button");
   sicnarfButton.textContent = "Sicnarf Loopstok";
   sicnarfButton.style.backgroundColor = "red";
