@@ -18,27 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ Firebase initialized successfully.");
 });
 
-const starWarsNames = [
-    "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
-    "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
-    "Ransolm Casterfo", "Vober Dand", "Therm Scissorpunch", "Lobot Kryze", "Bib Fortuna",
-    "Dexter Jettster", "Wilhuff Tarkin", "Sio Bibble", "Elan Sleazebaggano", "Momaw Nadon",
-    "Pre Vizsla", "Salacious Crumb", "Tion Medon", "Rako Hardeen", "Baze Malbus", 
-    "Cassian Andor", "Enric Pryde", "Shara Bey", "Carlist Rieekan", "Garven Dreis",
-    "Biggs Darklighter", "Bodhi Rook", "Larma D'Acy", "Hurst Romodi", "Kendal Ozzel",
-    "Maximilian Veers", "Piett Firmus", "Tasu Leech", "Bolla Ropal"
-];
-
-const baseballNames = [
-    "Sicnarf Loopstok", "Rock Shoulders", "Stubby Clap", "Oil Can Boyd", "Ten Million", 
-    "Bumpus Jones", "Jot Goar", "Ducky Hemp", "Egyptian Healy", "Welcome Gaston", 
-    "Dick Such", "Dick Burns", "Oyster Burns", "Icicle Reeder", "Dick Hunt",
-    "Candy Cummings", "Al Kaline", "Tuffy Gosewisch", "Lady Baldwin", "Pussy Tebeau",
-    "Jigger Statz", "The Only Nolan", "Count Sensenderfer", "King Lear", "Lil Stoner",
-    "Dizzy Trout", "Mysterious Walker", "Catfish Hunter", "Pete LaCock", "Johnny Dickshot",
-    "Coco Crisp", "Dick Pole", "Pickles Dilhoeffer", "Razor Shines", "Tim Spooneybarger",
-    "Boof Bonser", "Milton Bradley", "Chicken Wolf", "Cannonball Titcomb", "Orval Overall"
-];
+const starWarsNames = [...]; // (Your existing list)
+const baseballNames = [...]; // (Your existing list)
 
 let namePool = [];
 let playerName = "";
@@ -48,7 +29,8 @@ let gameOver = false;
 
 function startGame() {
     console.log("🎮 startGame() called.");
-    
+    gameOver = false;
+
     playerName = document.getElementById("player-name").value.trim();
     if (playerName === "") {
         console.warn("⚠️ No name entered! Stopping game start.");
@@ -64,9 +46,8 @@ function startGame() {
 
     namePool = [...starWarsNames, ...baseballNames];
     shuffleNames();
-    
+
     console.log("🎲 Names shuffled. Total names:", namePool.length);
-    gameOver = false;
     setNewQuestion();
 }
 
@@ -79,7 +60,7 @@ function getRandomName() {
     if (namePool.length === 0) {
         console.log("⚠️ No more names left, ending game.");
         endGame();
-        return "";
+        return null;
     }
     return namePool.pop();
 }
@@ -98,14 +79,13 @@ function makeGuess(choice) {
     let isStarWars = starWarsNames.includes(currentName);
     let isBaseball = baseballNames.includes(currentName);
     let correctAnswer = isStarWars ? "starwars" : "baseball";
-    
+
     if (choice === correctAnswer) {
         console.log("✅ Correct!");
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
-            sicnarfModeUnlocked = true;
             activateSicnarfMode();
         }
     } else {
@@ -116,12 +96,13 @@ function makeGuess(choice) {
     document.getElementById("score").textContent = `Score: ${score}`;
 
     setTimeout(() => {
-        setNewQuestion();
         document.getElementById("result").textContent = "";
+        setNewQuestion();
     }, 1000);
 }
 
 function activateSicnarfMode() {
+    sicnarfModeUnlocked = true;
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
 
     confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
@@ -152,9 +133,18 @@ function makeSicnarfGuess() {
     document.getElementById("score").textContent = `Score: ${score}`;
 
     setTimeout(() => {
-        setNewQuestion();
         document.getElementById("result").textContent = "";
+        setNewQuestion();
     }, 1000);
+}
+
+function setNewQuestion() {
+    let newName = getRandomName();
+    if (!newName) {
+        endGame();
+        return;
+    }
+    document.getElementById("question").textContent = newName;
 }
 
 function endGame() {
@@ -166,5 +156,8 @@ function endGame() {
 }
 
 function submitScore(name, score) {
-    db.collection("leaderboard").add({ name, score, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+    db.collection("leaderboard")
+      .add({ name, score, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+      .then(() => console.log("Score submitted!"))
+      .catch((error) => console.error("Error submitting score: ", error));
 }
