@@ -102,6 +102,13 @@ function makeGuess(choice) {
         console.log("✅ Correct!");
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
+
+        // 🏆 Check for Sicnarf Loopstok Mode Unlock
+        if (currentName === "Sicnarf Loopstok" && !sicnarfModeUnlocked) {
+            sicnarfModeUnlocked = true;
+            console.log("🎉 Sicnarf Mode UNLOCKED! 🏆");
+            alert("🎉 Sicnarf Loopstok Mode UNLOCKED! 🏆");
+        }
     } else {
         console.log("❌ Incorrect!");
         document.getElementById("result").textContent = "❌ Incorrect!";
@@ -113,6 +120,8 @@ function makeGuess(choice) {
         setNewQuestion();
         document.getElementById("result").textContent = "";
     }, 1000);
+}
+
 }
 
 function setNewQuestion() {
