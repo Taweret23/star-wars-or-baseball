@@ -10,10 +10,14 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let db;
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ DOM fully loaded. Initializing Firebase...");
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    console.log("✅ Firebase initialized successfully.");
+});
 
-// 🛠 Game Logic
 const starWarsNames = [
     "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
     "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
@@ -56,11 +60,13 @@ function startGame() {
 
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
+    document.getElementById("buttons").style.display = "block";
 
     namePool = [...starWarsNames, ...baseballNames];
     shuffleNames();
     
     console.log("🎲 Names shuffled. Total names:", namePool.length);
+    gameOver = false;
     setNewQuestion();
 }
 
@@ -79,7 +85,7 @@ function getRandomName() {
 }
 
 function makeGuess(choice) {
-    if (gameOver) return; // Prevents scoring after game ends
+    if (gameOver) return;
 
     console.log(`🧐 makeGuess() called. Player chose: ${choice}`);
 
@@ -98,7 +104,6 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
-        // 🏆 Sicnarf Loopstok Mode Unlock Condition
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
             sicnarfModeUnlocked = true;
             activateSicnarfMode();
@@ -125,18 +130,6 @@ function activateSicnarfMode() {
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
 
-    document.getElementById("game-container").style.color = "gold";
-    document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
-
-    let message = document.createElement("h1");
-    message.textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
-    message.style.color = "red";
-    message.style.fontSize = "2em";
-    message.style.textAlign = "center";
-    message.style.animation = "flash 1s infinite alternate";
-    
-    document.getElementById("game-container").prepend(message);
-
     let sicnarfButton = document.createElement("button");
     sicnarfButton.textContent = "Sicnarf Loopstok";
     sicnarfButton.style.backgroundColor = "red";
@@ -144,15 +137,6 @@ function activateSicnarfMode() {
     sicnarfButton.onclick = () => makeSicnarfGuess();
 
     document.getElementById("buttons").appendChild(sicnarfButton);
-
-    let style = document.createElement("style");
-    style.innerHTML = `
-        @keyframes flash {
-            from { opacity: 1; }
-            to { opacity: 0.5; }
-        }
-    `;
-    document.head.appendChild(style);
 }
 
 function makeSicnarfGuess() {
