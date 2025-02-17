@@ -62,16 +62,21 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    namePool = [...starWarsNames, ...baseballNames];
     shuffleNames();
-    
-    console.log("🎲 Names shuffled. Total names:", namePool.length);
     setNewQuestion();
 }
 
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
-    namePool.sort(() => Math.random() - 0.5);
+
+    // Fisher-Yates Shuffle Algorithm for better randomness
+    namePool = [...starWarsNames, ...baseballNames];
+    for (let i = namePool.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [namePool[i], namePool[j]] = [namePool[j], namePool[i]];
+    }
+
+    console.log("✅ Names shuffled. Total names:", namePool.length);
 }
 
 function getRandomName() {
@@ -97,7 +102,7 @@ function makeGuess(choice) {
     let isBaseball = baseballNames.includes(currentName);
 
     let correctAnswer = isStarWars ? "starwars" : "baseball";
-    
+
     if (choice === correctAnswer) {
         console.log("✅ Correct!");
         document.getElementById("result").textContent = "✅ Correct!";
@@ -105,6 +110,7 @@ function makeGuess(choice) {
 
         // 🏆 Sicnarf Loopstok Mode Unlock Condition
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
+            console.log("🎉 Sicnarf Mode Unlock Condition MET!");
             sicnarfModeUnlocked = true;
             activateSicnarfMode();
         }
@@ -120,9 +126,10 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "";
     }, 1000);
 }
+
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
-    
+
     // 🎉 Confetti Explosion 🎉
     confetti({
         particleCount: 200,
@@ -134,6 +141,7 @@ function activateSicnarfMode() {
     document.body.style.backgroundImage = "url('sicnarf.jpeg')";
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
 
     // Change text color for better contrast
     document.getElementById("game-container").style.color = "gold";
@@ -159,7 +167,6 @@ function activateSicnarfMode() {
     `;
     document.head.appendChild(style);
 }
-
 
 function setNewQuestion() {
     let newName = getRandomName();
