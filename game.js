@@ -84,6 +84,36 @@ function getRandomName() {
 
     return namePool.pop();
 }
+function makeGuess(choice) {
+    console.log(`🧐 makeGuess() called. Player chose: ${choice}`);
+
+    let currentName = document.getElementById("question").textContent;
+    if (!currentName) {
+        console.error("❌ Error: No name displayed!");
+        return;
+    }
+
+    let isStarWars = starWarsNames.includes(currentName);
+    let isBaseball = baseballNames.includes(currentName);
+
+    let correctAnswer = isStarWars ? "starwars" : "baseball";
+    
+    if (choice === correctAnswer) {
+        console.log("✅ Correct!");
+        document.getElementById("result").textContent = "✅ Correct!";
+        score++;
+    } else {
+        console.log("❌ Incorrect!");
+        document.getElementById("result").textContent = "❌ Incorrect!";
+    }
+
+    document.getElementById("score").textContent = `Score: ${score}`;
+
+    setTimeout(() => {
+        setNewQuestion();
+        document.getElementById("result").textContent = "";
+    }, 1000);
+}
 
 function setNewQuestion() {
     let newName = getRandomName();
