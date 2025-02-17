@@ -26,6 +26,11 @@ let sicnarfModeUnlocked = false;
 
 console.log("🔥 Script Loaded: Checking Firebase Setup");
 
+console.log("🔄 Calling shuffleNames() at the start of game.js...");
+shuffleNames();
+console.log("✅ namePool initialized:", namePool);
+
+
 // 🔥 Firebase Setup
 const firebaseConfig = {
     apiKey: "AIzaSyCgPtyZxO8I_tbHRYu8ZP87E5_n5vGagUs",
@@ -70,10 +75,15 @@ let namePool = [];
 
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
-    namePool = [...starWarsNames, ...baseballNames];
+    namePool = [...starWarsNames, ...baseballNames];  // Ensure it's filling correctly
+    if (namePool.length === 0) {
+        console.error("❌ Error: Name pool is empty after shuffle!");
+    } else {
+        console.log(`✅ Names shuffled. ${namePool.length} names added.`);
+    }
     namePool.sort(() => Math.random() - 0.5);
-    console.log("✅ Names shuffled. Total names:", namePool.length);
 }
+
 
 function getRandomName() {
     console.log("📢 getRandomName() called. Name pool size:", namePool.length);
