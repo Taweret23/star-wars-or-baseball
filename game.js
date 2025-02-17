@@ -24,7 +24,6 @@ const baseballNames = [
 ];
 
 let namePool = [];
-let playerName = "";
 let score = 0;
 let sicnarfModeUnlocked = false;
 let gameOver = false;
@@ -33,15 +32,7 @@ function startGame() {
   console.log("🎮 startGame() called.");
   gameOver = false;
 
-  playerName = document.getElementById("player-name").value.trim();
-  if (playerName === "") {
-    console.warn("⚠️ No name entered! Stopping game start.");
-    alert("Please enter your name!");
-    return;
-  }
-  console.log(`🎯 Player Name Entered: ${playerName}`);
-
-  document.getElementById("name-entry").style.display = "none";
+  document.getElementById("name-entry").style.display = "none"; // Hide name entry (no longer used)
   document.getElementById("game").style.display = "block";
   document.getElementById("buttons").style.display = "block";
 
