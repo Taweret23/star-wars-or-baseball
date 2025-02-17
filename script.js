@@ -34,9 +34,13 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
+console.log("Initializing Firebase...");
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+console.log("Firebase initialized successfully.");
 
 function startGame() {
     playerName = document.getElementById("player-name").value.trim();
@@ -48,12 +52,11 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    shuffleNames(); // Force shuffle before first question
-    console.log("Game started. Names shuffled:", namePool); // Debugging log
+    shuffleNames(); // Shuffle names before the first question
+    console.log("Game started. Names shuffled:", namePool.length);
     setNewQuestion(); // Start with a question
     loadLeaderboard(); // Load leaderboard
 }
-
 
 // 🎲 Name Handling (No Repeats)
 let namePool = [];
@@ -61,9 +64,8 @@ let namePool = [];
 function shuffleNames() {
     namePool = [...starWarsNames, ...baseballNames];
     namePool.sort(() => Math.random() - 0.5);
-    console.log("Names shuffled. Total names:", namePool.length); // Debugging log
+    console.log("Names shuffled. Total names:", namePool.length);
 }
-
 
 function getRandomName() {
     if (namePool.length === 0) {
@@ -181,7 +183,5 @@ function setNewQuestion() {
     }
 
     document.getElementById("question").textContent = newName;
-    console.log("New name selected:", newName); // Debugging log
+    console.log("New name selected:", newName);
 }
-
-
