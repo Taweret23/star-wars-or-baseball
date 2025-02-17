@@ -135,7 +135,7 @@ function makeGuess(choice) {
     setTimeout(() => {
         setNewQuestion();
         document.getElementById("result").textContent = "";
-    }, 1000);
+    }, 500);
 }
 
 function activateSicnarfMode() {
@@ -163,18 +163,25 @@ function activateSicnarfMode() {
     document.body.style.backgroundPosition = "center";
     document.body.style.backgroundRepeat = "no-repeat";
 
-    // Add Sicnarf Button
-    let sicnarfButton = document.createElement("button");
-    sicnarfButton.textContent = "Sicnarf Loopstok";
-    sicnarfButton.onclick = () => makeGuess("sicnarf");
-    sicnarfButton.style.background = "red";
-    sicnarfButton.style.color = "gold";
-    sicnarfButton.style.fontWeight = "bold";
-    sicnarfButton.style.marginTop = "10px";
-    document.getElementById("buttons").appendChild(sicnarfButton);
+    // Add Sicnarf Button (Only Once)
+    if (!document.getElementById("sicnarf-button")) {
+        let sicnarfButton = document.createElement("button");
+        sicnarfButton.id = "sicnarf-button";
+        sicnarfButton.textContent = "Sicnarf Loopstok";
+        sicnarfButton.onclick = () => makeGuess("sicnarf");
+        sicnarfButton.style.background = "red";
+        sicnarfButton.style.color = "gold";
+        sicnarfButton.style.fontWeight = "bold";
+        sicnarfButton.style.marginTop = "10px";
+        document.getElementById("buttons").appendChild(sicnarfButton);
+    }
 }
 
 function setNewQuestion() {
     let newName = getRandomName();
-    document.getElementById("question").textContent = newName || "Error loading name.";
+    if (newName) {
+        document.getElementById("question").textContent = newName;
+    } else {
+        endGame();
+    }
 }
