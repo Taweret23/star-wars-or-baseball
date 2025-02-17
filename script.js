@@ -48,10 +48,12 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    shuffleNames(); // Shuffle names before starting
+    shuffleNames(); // Force shuffle before first question
+    console.log("Game started. Names shuffled:", namePool); // Debugging log
     setNewQuestion(); // Start with a question
     loadLeaderboard(); // Load leaderboard
 }
+
 
 // 🎲 Name Handling (No Repeats)
 let namePool = [];
@@ -166,7 +168,16 @@ function setNewQuestion() {
         endGame();
         return;
     }
+    
     let newName = getRandomName();
+    
+    if (!newName) {
+        console.error("Error: newName is undefined or empty!");
+        document.getElementById("question").textContent = "Error loading name. Refresh and try again.";
+        return;
+    }
+
     document.getElementById("question").textContent = newName;
     console.log("New name selected:", newName); // Debugging log
 }
+
