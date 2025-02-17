@@ -24,6 +24,8 @@ let playerName = "";
 let score = 0;
 let sicnarfModeUnlocked = false;
 
+console.log("🔥 Script Loaded: Checking Firebase Setup");
+
 // 🔥 Firebase Setup
 const firebaseConfig = {
     apiKey: "AIzaSyCgPtyZxO8I_tbHRYu8ZP87E5_n5vGagUs",
@@ -34,26 +36,31 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
-console.log("Initializing Firebase...");
+console.log("🔥 Initializing Firebase...");
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-console.log("Firebase initialized successfully.");
+console.log("✅ Firebase initialized successfully.");
 
 function startGame() {
+    console.log("🎮 startGame() called.");
+    
     playerName = document.getElementById("player-name").value.trim();
     if (playerName === "") {
+        console.warn("⚠️ No name entered! Stopping game start.");
         alert("Please enter your name!");
         return;
     }
+
+    console.log(`🎯 Player Name Entered: ${playerName}`);
 
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
     shuffleNames(); // Shuffle names before the first question
-    console.log("Game started. Names shuffled:", namePool.length);
+    console.log("🎲 Names shuffled. Total names:", namePool.length);
     setNewQuestion(); // Start with a question
     loadLeaderboard(); // Load leaderboard
 }
@@ -62,21 +69,28 @@ function startGame() {
 let namePool = [];
 
 function shuffleNames() {
+    console.log("🔄 shuffleNames() called.");
     namePool = [...starWarsNames, ...baseballNames];
     namePool.sort(() => Math.random() - 0.5);
-    console.log("Names shuffled. Total names:", namePool.length);
+    console.log("✅ Names shuffled. Total names:", namePool.length);
 }
 
 function getRandomName() {
+    console.log("📢 getRandomName() called. Name pool size:", namePool.length);
+    
     if (namePool.length === 0) {
-        console.log("No more names left, ending game.");
+        console.log("⚠️ No more names left, ending game.");
         endGame();
         return "";
     }
-    return namePool.pop();
+
+    let selectedName = namePool.pop();
+    console.log(`🎯 New name picked: ${selectedName}`);
+    return selectedName;
 }
 
 function endGame() {
+    console.log("🏁 Game Over!");
     document.getElementById("question").textContent = "Game Over! You've seen every name.";
     document.getElementById("buttons").style.display = "none";
     document.getElementById("result").textContent = `Final Score: ${score}`;
@@ -85,91 +99,25 @@ function endGame() {
 
 // 🏆 Leaderboard Functions
 function submitScore(name, score) {
+    console.log(`📊 Submitting Score: ${name} - ${score}`);
     db.collection("leaderboard").add({
         name: name,
         score: score,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
-        console.log("Score submitted!");
+        console.log("✅ Score submitted!");
         loadLeaderboard();
     }).catch(error => {
-        console.error("Error submitting score:", error);
+        console.error("🔥 Error submitting score:", error);
     });
-}
-
-function loadLeaderboard() {
-    db.collection("leaderboard")
-        .orderBy("score", "desc")
-        .limit(10)
-        .get()
-        .then(snapshot => {
-            let leaderboard = snapshot.docs.map(doc => doc.data());
-            displayLeaderboard(leaderboard);
-        });
-}
-
-function displayLeaderboard(leaderboard) {
-    let leaderboardHTML = "";
-    leaderboard.forEach((entry, index) => {
-        leaderboardHTML += `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`;
-    });
-    document.getElementById("leaderboard").innerHTML = leaderboardHTML;
-}
-
-// 🕹️ Gameplay Logic
-function makeGuess(choice) {
-    const currentName = document.getElementById("question").textContent;
-    const isStarWars = starWarsNames.includes(currentName);
-    const isBaseball = baseballNames.includes(currentName);
-
-    let correct = false;
-
-    if (sicnarfModeUnlocked) {
-        if (choice === "sicnarf") {
-            correct = Math.random() > 0.5; // Sicnarf is randomly correct or wrong
-        } else if (choice === "starwars" && isStarWars) {
-            correct = true;
-        } else if (choice === "baseball" && isBaseball) {
-            correct = true;
-        }
-    } else {
-        if (choice === "starwars" && isStarWars) {
-            correct = true;
-        } else if (choice === "baseball" && isBaseball) {
-            correct = true;
-        }
-    }
-
-    if (correct) {
-        score++;
-        document.getElementById("result").textContent = "Correct! 🎉";
-    } else {
-        score = Math.max(0, score - 1);
-        document.getElementById("result").textContent = "Wrong! ❌";
-    }
-
-    document.getElementById("score").textContent = `Score: ${score}`;
-
-    if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
-        unlockSicnarfMode();
-    }
-
-    setNewQuestion();
-}
-
-function unlockSicnarfMode() {
-    sicnarfModeUnlocked = true;
-    document.body.classList.add("sicnarf-mode");
-    document.getElementById("buttons").innerHTML += `<button onclick="makeGuess('sicnarf')">Sicnarf Loopstok</button>`;
-    document.getElementById("result").textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
 }
 
 // Set first question
 function setNewQuestion() {
-    console.log("Setting new question...");
+    console.log("🔄 setNewQuestion() called.");
 
     if (namePool.length === 0) {
-        console.log("No more names left, ending game.");
+        console.log("⚠️ No more names left, ending game.");
         endGame();
         return;
     }
@@ -177,11 +125,11 @@ function setNewQuestion() {
     let newName = getRandomName();
     
     if (!newName) {
-        console.error("Error: newName is undefined or empty!");
+        console.error("❌ Error: newName is undefined or empty!");
         document.getElementById("question").textContent = "Error loading name. Refresh and try again.";
         return;
     }
 
     document.getElementById("question").textContent = newName;
-    console.log("New name selected:", newName);
+    console.log("✅ New name selected:", newName);
 }
