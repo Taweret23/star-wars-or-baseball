@@ -20,16 +20,13 @@ const baseballNames = [
     "Boof Bonser", "Milton Bradley", "Chicken Wolf", "Cannonball Titcomb", "Orval Overall"
 ];
 
+// 🎲 Declare namePool at the top so it's accessible everywhere
+let namePool = [];
 let playerName = "";
 let score = 0;
 let sicnarfModeUnlocked = false;
 
 console.log("🔥 Script Loaded: Checking Firebase Setup");
-
-console.log("🔄 Calling shuffleNames() at the start of game.js...");
-shuffleNames();
-console.log("✅ namePool initialized:", namePool);
-
 
 // 🔥 Firebase Setup
 const firebaseConfig = {
@@ -64,18 +61,19 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    shuffleNames(); // Shuffle names before the first question
+    // 🛠 Reset and shuffle names before the first question
+    namePool = [...starWarsNames, ...baseballNames]; 
+    shuffleNames();
+    
     console.log("🎲 Names shuffled. Total names:", namePool.length);
     setNewQuestion(); // Start with a question
     loadLeaderboard(); // Load leaderboard
 }
 
 // 🎲 Name Handling (No Repeats)
-let namePool = [];
-
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
-    namePool = [...starWarsNames, ...baseballNames];  // Ensure it's filling correctly
+
     if (namePool.length === 0) {
         console.error("❌ Error: Name pool is empty after shuffle!");
     } else {
@@ -83,7 +81,6 @@ function shuffleNames() {
     }
     namePool.sort(() => Math.random() - 0.5);
 }
-
 
 function getRandomName() {
     console.log("📢 getRandomName() called. Name pool size:", namePool.length);
