@@ -10,37 +10,21 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
-// Wait for Firebase to fully load before running game logic
+let db;
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ DOM fully loaded. Initializing Firebase...");
     
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    db = firebase.firestore();
     console.log("✅ Firebase initialized successfully.");
+    
+    loadLeaderboard();
 });
 
 // 🛠 Game Logic
-const starWarsNames = [
-    "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
-    "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
-    "Ransolm Casterfo", "Vober Dand", "Therm Scissorpunch", "Lobot Kryze", "Bib Fortuna",
-    "Dexter Jettster", "Wilhuff Tarkin", "Sio Bibble", "Elan Sleazebaggano", "Momaw Nadon",
-    "Pre Vizsla", "Salacious Crumb", "Tion Medon", "Rako Hardeen", "Baze Malbus", 
-    "Cassian Andor", "Enric Pryde", "Shara Bey", "Carlist Rieekan", "Garven Dreis",
-    "Biggs Darklighter", "Bodhi Rook", "Larma D'Acy", "Hurst Romodi", "Kendal Ozzel",
-    "Maximilian Veers", "Piett Firmus", "Tasu Leech", "Bolla Ropal"
-];
-
-const baseballNames = [
-    "Sicnarf Loopstok", "Rock Shoulders", "Stubby Clap", "Oil Can Boyd", "Ten Million", 
-    "Bumpus Jones", "Jot Goar", "Ducky Hemp", "Egyptian Healy", "Welcome Gaston", 
-    "Dick Such", "Dick Burns", "Oyster Burns", "Icicle Reeder", "Dick Hunt",
-    "Candy Cummings", "Al Kaline", "Tuffy Gosewisch", "Lady Baldwin", "Pussy Tebeau",
-    "Jigger Statz", "The Only Nolan", "Count Sensenderfer", "King Lear", "Lil Stoner",
-    "Dizzy Trout", "Mysterious Walker", "Catfish Hunter", "Pete LaCock", "Johnny Dickshot",
-    "Coco Crisp", "Dick Pole", "Pickles Dilhoeffer", "Razor Shines", "Tim Spooneybarger",
-    "Boof Bonser", "Milton Bradley", "Chicken Wolf", "Cannonball Titcomb", "Orval Overall"
-];
+const starWarsNames = [...];  // Keep the full list here
+const baseballNames = [...];  // Keep the full list here
 
 let namePool = [];
 let playerName = "";
@@ -68,19 +52,18 @@ function startGame() {
 
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
-
     namePool = [...starWarsNames, ...baseballNames];
     for (let i = namePool.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         [namePool[i], namePool[j]] = [namePool[j], namePool[i]];
     }
-
     console.log("✅ Names shuffled. Total names:", namePool.length);
 }
 
 function getRandomName() {
     if (namePool.length === 0) {
         console.log("⚠️ No more names left, ending game.");
+        submitScore();  // Submit final score when game ends
         return "GAME OVER";
     }
     return namePool.pop();
@@ -101,7 +84,6 @@ function makeGuess(choice) {
     let correctAnswer = isStarWars ? "starwars" : "baseball";
 
     if (choice === "sicnarf") {
-        // 🎲 Random 50/50 correctness for Sicnarf Button
         let isCorrect = Math.random() < 0.5;
         document.getElementById("result").textContent = isCorrect ? "🔥 SICNARF!" : "❌ SICNARF?!";
         if (isCorrect) score++;
@@ -169,4 +151,54 @@ function setNewQuestion() {
     } else {
         document.getElementById("buttons").style.display = "block";
     }
+}
+
+// 🏆 Submit Score to Firebase
+function submitScore() {
+    console.log(`📊 Submitting Score: ${playerName} - ${score}`);
+    if (!db) {
+        console.error("🔥 Firebase database not initialized.");
+        return;
+    }
+
+    db.collection("leaderboard").add({
+        name: playerName,
+        score: score,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        console.log("✅ Score submitted!");
+        loadLeaderboard();
+    }).catch(error => {
+        console.error("🔥 Error submitting score:", error);
+    });
+}
+
+// 🏆 Load & Display Leaderboard
+function loadLeaderboard() {
+    console.log("📊 Loading leaderboard...");
+
+    if (!db) {
+        console.error("🔥 Firebase database not initialized.");
+        return;
+    }
+
+    let leaderboardList = document.getElementById("leaderboard");
+    leaderboardList.innerHTML = "";
+
+    db.collection("leaderboard")
+        .orderBy("score", "desc")
+        .limit(5)  // Show only top 5 scores
+        .get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                let entry = document.createElement("li");
+                let data = doc.data();
+                entry.textContent = `${data.name}: ${data.score}`;
+                leaderboardList.appendChild(entry);
+            });
+            console.log("✅ Leaderboard updated.");
+        })
+        .catch(error => {
+            console.error("🔥 Error loading leaderboard:", error);
+        });
 }
