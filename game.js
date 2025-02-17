@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ Firebase initialized successfully.");
 });
 
-
 // 🛠 **Game Logic**
 const starWarsNames = [
     "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
@@ -127,7 +126,7 @@ function makeGuess(choice) {
 // ** SICNARF MODE ACTIVATION **
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
-    
+
     // 🎉 Confetti Explosion 🎉
     confetti({
         particleCount: 200,
@@ -144,25 +143,23 @@ function activateSicnarfMode() {
     document.getElementById("game-container").style.color = "gold";
     document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
 
-    // Add flashing Sicnarf message
-    let message = document.createElement("h1");
-    message.textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
-    message.style.color = "red";
-    message.style.fontSize = "2em";
-    message.style.textAlign = "center";
-    message.style.animation = "flash 1s infinite alternate";
-    
-    document.getElementById("game-container").prepend(message);
-
-    // Add flashing effect to text
-    let style = document.createElement("style");
-    style.innerHTML = `
-        @keyframes flash {
-            from { opacity: 1; }
-            to { opacity: 0.5; }
+    // Add Sicnarf button
+    let sicnarfButton = document.createElement("button");
+    sicnarfButton.textContent = "Sicnarf Loopstok";
+    sicnarfButton.style.backgroundColor = "red";
+    sicnarfButton.style.color = "yellow";
+    sicnarfButton.style.fontWeight = "bold";
+    sicnarfButton.onclick = () => {
+        let randomOutcome = Math.random() < 0.5 ? "✅ Correct!" : "❌ Incorrect!";
+        document.getElementById("result").textContent = randomOutcome;
+        if (randomOutcome === "✅ Correct!") {
+            score++;
         }
-    `;
-    document.head.appendChild(style);
+        document.getElementById("score").textContent = `Score: ${score}`;
+        setTimeout(setNewQuestion, 1000);
+    };
+
+    document.getElementById("buttons").appendChild(sicnarfButton);
 }
 
 function setNewQuestion() {
