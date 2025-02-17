@@ -17,11 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     console.log("✅ Firebase initialized successfully.");
-
-    startGame(); // Ensure game only starts after Firebase is ready
 });
 
-// 🛠 Game Logic (Unchanged)
+// 🛠 Game Logic
 const starWarsNames = [
     "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
     "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
@@ -47,6 +45,7 @@ const baseballNames = [
 let namePool = [];
 let playerName = "";
 let score = 0;
+let sicnarfModeUnlocked = false;
 
 function startGame() {
     console.log("🎮 startGame() called.");
@@ -84,6 +83,7 @@ function getRandomName() {
 
     return namePool.pop();
 }
+
 function makeGuess(choice) {
     console.log(`🧐 makeGuess() called. Player chose: ${choice}`);
 
@@ -120,8 +120,6 @@ function makeGuess(choice) {
         setNewQuestion();
         document.getElementById("result").textContent = "";
     }, 1000);
-}
-
 }
 
 function setNewQuestion() {
