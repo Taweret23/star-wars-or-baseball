@@ -61,8 +61,9 @@ let namePool = [];
 function shuffleNames() {
     namePool = [...starWarsNames, ...baseballNames];
     namePool.sort(() => Math.random() - 0.5);
-    console.log("Names shuffled:", namePool); // Debugging log
+    console.log("Names shuffled. Total names:", namePool.length); // Debugging log
 }
+
 
 function getRandomName() {
     if (namePool.length === 0) {
@@ -163,6 +164,8 @@ function unlockSicnarfMode() {
 
 // Set first question
 function setNewQuestion() {
+    console.log("Setting new question...");
+
     if (namePool.length === 0) {
         console.log("No more names left, ending game.");
         endGame();
@@ -180,4 +183,5 @@ function setNewQuestion() {
     document.getElementById("question").textContent = newName;
     console.log("New name selected:", newName); // Debugging log
 }
+
 
