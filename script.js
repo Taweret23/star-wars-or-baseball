@@ -41,10 +41,19 @@ function startGame() {
     updateLeaderboard();
 }
 
-function getRandomName() {
-    const allNames = [...starWarsNames, ...baseballNames];
-    return allNames[Math.floor(Math.random() * allNames.length)];
+let namePool = [];
+
+function shuffleNames() {
+    namePool = [...starWarsNames, ...baseballNames].sort(() => Math.random() - 0.5);
 }
+
+function getRandomName() {
+    if (namePool.length === 0) {
+        shuffleNames(); // Refill and shuffle when empty
+    }
+    return namePool.pop();
+}
+
 
 function makeGuess(choice) {
     const currentName = document.getElementById("question").textContent;
