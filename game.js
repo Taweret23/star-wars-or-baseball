@@ -120,6 +120,45 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "";
     }, 1000);
 }
+function activateSicnarfMode() {
+    console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
+    
+    // 🎉 Confetti Explosion 🎉
+    confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.6 } // Confetti falls from the top
+    });
+
+    // Change background to Sicnarf's image
+    document.body.style.backgroundImage = "url('sicnarf.jpeg')";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+
+    // Change text color for better contrast
+    document.getElementById("game-container").style.color = "gold";
+    document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
+
+    // Add flashing Sicnarf message
+    let message = document.createElement("h1");
+    message.textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
+    message.style.color = "red";
+    message.style.fontSize = "2em";
+    message.style.textAlign = "center";
+    message.style.animation = "flash 1s infinite alternate";
+    
+    document.getElementById("game-container").prepend(message);
+
+    // Add flashing effect to text
+    let style = document.createElement("style");
+    style.innerHTML = `
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 
 function setNewQuestion() {
