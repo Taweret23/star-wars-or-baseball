@@ -172,6 +172,13 @@ function activateSicnarfMode() {
   sicnarfButton.style.color = "yellow";
   sicnarfButton.onclick = () => makeSicnarfGuess();
   document.getElementById("buttons").appendChild(sicnarfButton);
+
+  // Display the flashing notification message.
+  const notification = document.getElementById("sicnarf-notification");
+  if (notification) {
+    notification.textContent = "SICNARF LOOPSTOK MODE UNLOCKED";
+    notification.style.display = "block";
+  }
 }
 
 function makeSicnarfGuess() {
