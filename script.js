@@ -47,12 +47,26 @@ function shuffleNames() {
     namePool = [...starWarsNames, ...baseballNames].sort(() => Math.random() - 0.5);
 }
 
+let namePool = [];
+
+function shuffleNames() {
+    namePool = [...starWarsNames, ...baseballNames].sort(() => Math.random() - 0.5);
+}
+
 function getRandomName() {
     if (namePool.length === 0) {
-        shuffleNames(); // Refill and shuffle when empty
+        endGame(); // Ends the game when all names have been used
+        return "";
     }
     return namePool.pop();
 }
+
+function endGame() {
+    document.getElementById("question").textContent = "Game Over! You've seen every name.";
+    document.getElementById("buttons").style.display = "none";
+    document.getElementById("result").textContent = `Final Score: ${score}`;
+}
+
 
 
 function makeGuess(choice) {
