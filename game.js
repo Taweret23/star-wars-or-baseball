@@ -10,7 +10,7 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
-// ** Ensure Firebase initializes before starting the game **
+// Ensure Firebase initializes before starting the game
 let db;
 document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ DOM fully loaded. Initializing Firebase...");
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ Firebase initialized successfully.");
 });
 
-// 🛠 **Game Logic**
+// 🛠 Game Logic
 const starWarsNames = [
     "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
     "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
@@ -118,8 +118,8 @@ function makeGuess(choice) {
     document.getElementById("score").textContent = `Score: ${score}`;
 
     setTimeout(() => {
-        setNewQuestion();
         document.getElementById("result").textContent = "";
+        setNewQuestion();
     }, 1000);
 }
 
@@ -134,29 +134,29 @@ function activateSicnarfMode() {
         origin: { y: 0.6 }
     });
 
-    // Change background to Sicnarf's image
     document.body.style.backgroundImage = "url('sicnarf.jpeg')";
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
-
-    // Change text color for better contrast
     document.getElementById("game-container").style.color = "gold";
     document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
 
-    // Add Sicnarf button
     let sicnarfButton = document.createElement("button");
     sicnarfButton.textContent = "Sicnarf Loopstok";
     sicnarfButton.style.backgroundColor = "red";
     sicnarfButton.style.color = "yellow";
     sicnarfButton.style.fontWeight = "bold";
     sicnarfButton.onclick = () => {
-        let randomOutcome = Math.random() < 0.5 ? "✅ Correct!" : "❌ Incorrect!";
+        let outcomes = ["🔥 SICNARF!", "⁉️ SICNARF?!"];
+        let randomOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
         document.getElementById("result").textContent = randomOutcome;
-        if (randomOutcome === "✅ Correct!") {
+        if (randomOutcome === "🔥 SICNARF!") {
             score++;
         }
         document.getElementById("score").textContent = `Score: ${score}`;
-        setTimeout(setNewQuestion, 1000);
+        setTimeout(() => {
+            document.getElementById("result").textContent = "";
+            setNewQuestion();
+        }, 1000);
     };
 
     document.getElementById("buttons").appendChild(sicnarfButton);
