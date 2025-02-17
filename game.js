@@ -10,21 +10,40 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
+// ** Ensure Firebase initializes before starting the game **
 let db;
-
 document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ DOM fully loaded. Initializing Firebase...");
     
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
-    console.log("✅ Firebase initialized successfully.");
     
-    loadLeaderboard();
+    console.log("✅ Firebase initialized successfully.");
 });
 
-// 🛠 Game Logic
-const starWarsNames = [...];  // Keep the full list here
-const baseballNames = [...];  // Keep the full list here
+
+// 🛠 **Game Logic**
+const starWarsNames = [
+    "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
+    "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
+    "Ransolm Casterfo", "Vober Dand", "Therm Scissorpunch", "Lobot Kryze", "Bib Fortuna",
+    "Dexter Jettster", "Wilhuff Tarkin", "Sio Bibble", "Elan Sleazebaggano", "Momaw Nadon",
+    "Pre Vizsla", "Salacious Crumb", "Tion Medon", "Rako Hardeen", "Baze Malbus", 
+    "Cassian Andor", "Enric Pryde", "Shara Bey", "Carlist Rieekan", "Garven Dreis",
+    "Biggs Darklighter", "Bodhi Rook", "Larma D'Acy", "Hurst Romodi", "Kendal Ozzel",
+    "Maximilian Veers", "Piett Firmus", "Tasu Leech", "Bolla Ropal"
+];
+
+const baseballNames = [
+    "Sicnarf Loopstok", "Rock Shoulders", "Stubby Clap", "Oil Can Boyd", "Ten Million", 
+    "Bumpus Jones", "Jot Goar", "Ducky Hemp", "Egyptian Healy", "Welcome Gaston", 
+    "Dick Such", "Dick Burns", "Oyster Burns", "Icicle Reeder", "Dick Hunt",
+    "Candy Cummings", "Al Kaline", "Tuffy Gosewisch", "Lady Baldwin", "Pussy Tebeau",
+    "Jigger Statz", "The Only Nolan", "Count Sensenderfer", "King Lear", "Lil Stoner",
+    "Dizzy Trout", "Mysterious Walker", "Catfish Hunter", "Pete LaCock", "Johnny Dickshot",
+    "Coco Crisp", "Dick Pole", "Pickles Dilhoeffer", "Razor Shines", "Tim Spooneybarger",
+    "Boof Bonser", "Milton Bradley", "Chicken Wolf", "Cannonball Titcomb", "Orval Overall"
+];
 
 let namePool = [];
 let playerName = "";
@@ -46,26 +65,25 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
+    namePool = [...starWarsNames, ...baseballNames];
     shuffleNames();
+    
+    console.log("🎲 Names shuffled. Total names:", namePool.length);
     setNewQuestion();
 }
 
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
-    namePool = [...starWarsNames, ...baseballNames];
-    for (let i = namePool.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [namePool[i], namePool[j]] = [namePool[j], namePool[i]];
-    }
-    console.log("✅ Names shuffled. Total names:", namePool.length);
+    namePool.sort(() => Math.random() - 0.5);
 }
 
 function getRandomName() {
     if (namePool.length === 0) {
         console.log("⚠️ No more names left, ending game.");
-        submitScore();  // Submit final score when game ends
-        return "GAME OVER";
+        endGame();
+        return "";
     }
+
     return namePool.pop();
 }
 
@@ -73,8 +91,8 @@ function makeGuess(choice) {
     console.log(`🧐 makeGuess() called. Player chose: ${choice}`);
 
     let currentName = document.getElementById("question").textContent;
-    if (!currentName || currentName === "GAME OVER") {
-        console.error("❌ Error: No name displayed or game over!");
+    if (!currentName) {
+        console.error("❌ Error: No name displayed!");
         return;
     }
 
@@ -82,21 +100,19 @@ function makeGuess(choice) {
     let isBaseball = baseballNames.includes(currentName);
 
     let correctAnswer = isStarWars ? "starwars" : "baseball";
-
-    if (choice === "sicnarf") {
-        let isCorrect = Math.random() < 0.5;
-        document.getElementById("result").textContent = isCorrect ? "🔥 SICNARF!" : "❌ SICNARF?!";
-        if (isCorrect) score++;
-    } else if (choice === correctAnswer) {
+    
+    if (choice === correctAnswer) {
+        console.log("✅ Correct!");
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
+        // 🏆 Sicnarf Loopstok Mode Unlock Condition
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
-            console.log("🎉 Sicnarf Mode Unlock Condition MET!");
             sicnarfModeUnlocked = true;
             activateSicnarfMode();
         }
     } else {
+        console.log("❌ Incorrect!");
         document.getElementById("result").textContent = "❌ Incorrect!";
     }
 
@@ -105,100 +121,55 @@ function makeGuess(choice) {
     setTimeout(() => {
         setNewQuestion();
         document.getElementById("result").textContent = "";
-    }, 500);
+    }, 1000);
 }
 
+// ** SICNARF MODE ACTIVATION **
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
-
-    let modeMessage = document.createElement("h1");
-    modeMessage.innerHTML = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
-    modeMessage.style.color = "red";
-    modeMessage.style.textAlign = "center";
-    modeMessage.style.fontSize = "2em";
-    modeMessage.style.textShadow = "3px 3px 5px yellow";
-    document.getElementById("game-container").prepend(modeMessage);
-
+    
+    // 🎉 Confetti Explosion 🎉
     confetti({
         particleCount: 200,
         spread: 90,
         origin: { y: 0.6 }
     });
 
+    // Change background to Sicnarf's image
     document.body.style.backgroundImage = "url('sicnarf.jpeg')";
     document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
 
-    if (!document.getElementById("sicnarf-button")) {
-        let sicnarfButton = document.createElement("button");
-        sicnarfButton.id = "sicnarf-button";
-        sicnarfButton.textContent = "Sicnarf Loopstok";
-        sicnarfButton.onclick = () => makeGuess("sicnarf");
-        sicnarfButton.style.background = "red";
-        sicnarfButton.style.color = "gold";
-        sicnarfButton.style.fontWeight = "bold";
-        sicnarfButton.style.marginTop = "10px";
-        document.getElementById("buttons").appendChild(sicnarfButton);
-    }
+    // Change text color for better contrast
+    document.getElementById("game-container").style.color = "gold";
+    document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
+
+    // Add flashing Sicnarf message
+    let message = document.createElement("h1");
+    message.textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
+    message.style.color = "red";
+    message.style.fontSize = "2em";
+    message.style.textAlign = "center";
+    message.style.animation = "flash 1s infinite alternate";
+    
+    document.getElementById("game-container").prepend(message);
+
+    // Add flashing effect to text
+    let style = document.createElement("style");
+    style.innerHTML = `
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 function setNewQuestion() {
     let newName = getRandomName();
+    if (!newName) {
+        document.getElementById("question").textContent = "Error loading name.";
+        return;
+    }
     document.getElementById("question").textContent = newName;
-
-    if (newName === "GAME OVER") {
-        document.getElementById("buttons").style.display = "none";
-        document.getElementById("result").textContent = "You've seen all names!";
-    } else {
-        document.getElementById("buttons").style.display = "block";
-    }
-}
-
-// 🏆 Submit Score to Firebase
-function submitScore() {
-    console.log(`📊 Submitting Score: ${playerName} - ${score}`);
-    if (!db) {
-        console.error("🔥 Firebase database not initialized.");
-        return;
-    }
-
-    db.collection("leaderboard").add({
-        name: playerName,
-        score: score,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        console.log("✅ Score submitted!");
-        loadLeaderboard();
-    }).catch(error => {
-        console.error("🔥 Error submitting score:", error);
-    });
-}
-
-// 🏆 Load & Display Leaderboard
-function loadLeaderboard() {
-    console.log("📊 Loading leaderboard...");
-
-    if (!db) {
-        console.error("🔥 Firebase database not initialized.");
-        return;
-    }
-
-    let leaderboardList = document.getElementById("leaderboard");
-    leaderboardList.innerHTML = "";
-
-    db.collection("leaderboard")
-        .orderBy("score", "desc")
-        .limit(5)  // Show only top 5 scores
-        .get()
-        .then(snapshot => {
-            snapshot.forEach(doc => {
-                let entry = document.createElement("li");
-                let data = doc.data();
-                entry.textContent = `${data.name}: ${data.score}`;
-                leaderboardList.appendChild(entry);
-            });
-            console.log("✅ Leaderboard updated.");
-        })
-        .catch(error => {
-            console.error("🔥 Error loading leaderboard:", error);
-        });
 }
