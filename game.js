@@ -141,6 +141,15 @@ function makeGuess(choice) {
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
 
+    // Show Sicnarf Mode Unlocked Message
+    let modeMessage = document.createElement("h1");
+    modeMessage.innerHTML = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
+    modeMessage.style.color = "red";
+    modeMessage.style.textAlign = "center";
+    modeMessage.style.fontSize = "2em";
+    modeMessage.style.textShadow = "3px 3px 5px yellow";
+    document.getElementById("game-container").prepend(modeMessage);
+
     // 🎉 Confetti Explosion 🎉
     confetti({
         particleCount: 200,
@@ -153,10 +162,6 @@ function activateSicnarfMode() {
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
     document.body.style.backgroundRepeat = "no-repeat";
-
-    // Change text color
-    document.getElementById("game-container").style.color = "gold";
-    document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
 
     // Add Sicnarf Button
     let sicnarfButton = document.createElement("button");
@@ -171,9 +176,5 @@ function activateSicnarfMode() {
 
 function setNewQuestion() {
     let newName = getRandomName();
-    if (!newName) {
-        document.getElementById("question").textContent = "Error loading name.";
-        return;
-    }
-    document.getElementById("question").textContent = newName;
+    document.getElementById("question").textContent = newName || "Error loading name.";
 }
