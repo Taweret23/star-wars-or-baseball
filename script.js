@@ -48,7 +48,7 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    shuffleNames(); // Make sure name pool is shuffled
+    shuffleNames(); // Shuffle names before starting
     setNewQuestion(); // Start with a question
     loadLeaderboard(); // Load leaderboard
 }
@@ -57,12 +57,15 @@ function startGame() {
 let namePool = [];
 
 function shuffleNames() {
-    namePool = [...starWarsNames, ...baseballNames].sort(() => Math.random() - 0.5);
+    namePool = [...starWarsNames, ...baseballNames];
+    namePool.sort(() => Math.random() - 0.5);
+    console.log("Names shuffled:", namePool); // Debugging log
 }
 
 function getRandomName() {
     if (namePool.length === 0) {
-        endGame(); // Ends the game when all names have been used
+        console.log("No more names left, ending game.");
+        endGame();
         return "";
     }
     return namePool.pop();
@@ -158,5 +161,12 @@ function unlockSicnarfMode() {
 
 // Set first question
 function setNewQuestion() {
-    document.getElementById("question").textContent = getRandomName();
+    if (namePool.length === 0) {
+        console.log("No more names left, ending game.");
+        endGame();
+        return;
+    }
+    let newName = getRandomName();
+    document.getElementById("question").textContent = newName;
+    console.log("New name selected:", newName); // Debugging log
 }
