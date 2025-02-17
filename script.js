@@ -24,8 +24,19 @@ let playerName = "";
 let score = 0;
 let sicnarfModeUnlocked = false;
 
-// Load leaderboard from local storage
+// 🔥 Firebase Setup
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_ID",
+    appId: "YOUR_APP_ID"
+};
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 function startGame() {
     playerName = document.getElementById("player-name").value.trim();
@@ -38,15 +49,15 @@ function startGame() {
     document.getElementById("game").style.display = "block";
 
     setNewQuestion();
-    updateLeaderboard();
+    loadLeaderboard();
 }
 
+// 🎲 Name Handling (No Repeats)
 let namePool = [];
 
 function shuffleNames() {
     namePool = [...starWarsNames, ...baseballNames].sort(() => Math.random() - 0.5);
 }
-
 
 function getRandomName() {
     if (namePool.length === 0) {
@@ -60,10 +71,43 @@ function endGame() {
     document.getElementById("question").textContent = "Game Over! You've seen every name.";
     document.getElementById("buttons").style.display = "none";
     document.getElementById("result").textContent = `Final Score: ${score}`;
+    submitScore(playerName, score);
 }
 
+// 🏆 Leaderboard Functions
+function submitScore(name, score) {
+    db.collection("leaderboard").add({
+        name: name,
+        score: score,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        console.log("Score submitted!");
+        loadLeaderboard();
+    }).catch(error => {
+        console.error("Error submitting score:", error);
+    });
+}
 
+function loadLeaderboard() {
+    db.collection("leaderboard")
+        .orderBy("score", "desc")
+        .limit(10)
+        .get()
+        .then(snapshot => {
+            let leaderboard = snapshot.docs.map(doc => doc.data());
+            displayLeaderboard(leaderboard);
+        });
+}
 
+function displayLeaderboard(leaderboard) {
+    let leaderboardHTML = "";
+    leaderboard.forEach((entry, index) => {
+        leaderboardHTML += `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`;
+    });
+    document.getElementById("leaderboard").innerHTML = leaderboardHTML;
+}
+
+// 🕹️ Gameplay Logic
 function makeGuess(choice) {
     const currentName = document.getElementById("question").textContent;
     const isStarWars = starWarsNames.includes(currentName);
@@ -101,7 +145,6 @@ function makeGuess(choice) {
         unlockSicnarfMode();
     }
 
-    updateLeaderboard();
     setNewQuestion();
 }
 
@@ -112,108 +155,7 @@ function unlockSicnarfMode() {
     document.getElementById("result").textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
 }
 
-// 🔥 Firebase Setup
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_ID",
-    appId: "YOUR_APP_ID"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// Function to submit score to Firebase
-function submitScore(name, score) {
-    db.collection("leaderboard").add({
-        name: name,
-        score: score,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        console.log("Score submitted!");
-        loadLeaderboard();
-    }).catch(error => {
-        console.error("Error submitting score:", error);
-    });
-}
-
-// Load leaderboard from Firebase
-function loadLeaderboard() {
-    db.collection("leaderboard")
-        .orderBy("score", "desc")
-        .limit(10)
-        .get()
-        .then(snapshot => {
-            let leaderboard = snapshot.docs.map(doc => doc.data());
-            displayLeaderboard(leaderboard);
-        });
-}
-
-// Update leaderboard display
-function displayLeaderboard(leaderboard) {
-    let leaderboardHTML = "";
-    leaderboard.forEach((entry, index) => {
-        leaderboardHTML += `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`;
-    });
-    document.getElementById("leaderboard").innerHTML = leaderboardHTML;
-}
-
-// Submit score when a player makes a guess
-function makeGuess(choice) {
-    const currentName = document.getElementById("question").textContent;
-    const isStarWars = starWarsNames.includes(currentName);
-    const isBaseball = baseballNames.includes(currentName);
-
-    let correct = false;
-
-    if (sicnarfModeUnlocked) {
-        if (choice === "sicnarf") {
-            correct = Math.random() > 0.5;
-        } else if (choice === "starwars" && isStarWars) {
-            correct = true;
-        } else if (choice === "baseball" && isBaseball) {
-            correct = true;
-        }
-    } else {
-        if (choice === "starwars" && isStarWars) {
-            correct = true;
-        } else if (choice === "baseball" && isBaseball) {
-            correct = true;
-        }
-    }
-
-    if (correct) {
-        score++;
-        document.getElementById("result").textContent = "Correct! 🎉";
-    } else {
-        score = Math.max(0, score - 1);
-        document.getElementById("result").textContent = "Wrong! ❌";
-    }
-
-    document.getElementById("score").textContent = `Score: ${score}`;
-
-    if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
-        unlockSicnarfMode();
-    }
-
-    submitScore(playerName, score);
-    setNewQuestion();
-}
-/ Keep only top 10 players
-
-    
-
-    let leaderboardHTML = "";
-    leaderboard.forEach((entry, index) => {
-        leaderboardHTML += `<li>${index + 1}. ${entry.name} - ${entry.score}</li>`;
-    });
-
-    document.getElementById("leaderboard").innerHTML = leaderboardHTML;
-}
-
+// Set first question
 function setNewQuestion() {
     document.getElementById("question").textContent = getRandomName();
 }
