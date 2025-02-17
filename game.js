@@ -103,7 +103,18 @@ function makeGuess(choice) {
 
     let correctAnswer = isStarWars ? "starwars" : "baseball";
 
-    if (choice === correctAnswer) {
+    if (choice === "sicnarf") {
+        // 🎲 Random 50/50 correctness for Sicnarf Button
+        let isCorrect = Math.random() < 0.5;
+        if (isCorrect) {
+            console.log("🔥 Sicnarf Button: Randomly Correct!");
+            document.getElementById("result").textContent = "🔥 SICNARF!";
+            score++;
+        } else {
+            console.log("🔥 Sicnarf Button: Randomly Incorrect!");
+            document.getElementById("result").textContent = "❌ SICNARF?!";
+        }
+    } else if (choice === correctAnswer) {
         console.log("✅ Correct!");
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
@@ -134,7 +145,7 @@ function activateSicnarfMode() {
     confetti({
         particleCount: 200,
         spread: 90,
-        origin: { y: 0.6 } // Confetti falls from the top
+        origin: { y: 0.6 }
     });
 
     // Change background to Sicnarf's image
@@ -143,29 +154,19 @@ function activateSicnarfMode() {
     document.body.style.backgroundPosition = "center";
     document.body.style.backgroundRepeat = "no-repeat";
 
-    // Change text color for better contrast
+    // Change text color
     document.getElementById("game-container").style.color = "gold";
     document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
 
-    // Add flashing Sicnarf message
-    let message = document.createElement("h1");
-    message.textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
-    message.style.color = "red";
-    message.style.fontSize = "2em";
-    message.style.textAlign = "center";
-    message.style.animation = "flash 1s infinite alternate";
-    
-    document.getElementById("game-container").prepend(message);
-
-    // Add flashing effect to text
-    let style = document.createElement("style");
-    style.innerHTML = `
-        @keyframes flash {
-            from { opacity: 1; }
-            to { opacity: 0.5; }
-        }
-    `;
-    document.head.appendChild(style);
+    // Add Sicnarf Button
+    let sicnarfButton = document.createElement("button");
+    sicnarfButton.textContent = "Sicnarf Loopstok";
+    sicnarfButton.onclick = () => makeGuess("sicnarf");
+    sicnarfButton.style.background = "red";
+    sicnarfButton.style.color = "gold";
+    sicnarfButton.style.fontWeight = "bold";
+    sicnarfButton.style.marginTop = "10px";
+    document.getElementById("buttons").appendChild(sicnarfButton);
 }
 
 function setNewQuestion() {
