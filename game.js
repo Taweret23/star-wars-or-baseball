@@ -69,7 +69,6 @@ function startGame() {
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
 
-    // Fisher-Yates Shuffle Algorithm for better randomness
     namePool = [...starWarsNames, ...baseballNames];
     for (let i = namePool.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -82,10 +81,8 @@ function shuffleNames() {
 function getRandomName() {
     if (namePool.length === 0) {
         console.log("⚠️ No more names left, ending game.");
-        endGame();
-        return "";
+        return "GAME OVER";
     }
-
     return namePool.pop();
 }
 
@@ -93,8 +90,8 @@ function makeGuess(choice) {
     console.log(`🧐 makeGuess() called. Player chose: ${choice}`);
 
     let currentName = document.getElementById("question").textContent;
-    if (!currentName) {
-        console.error("❌ Error: No name displayed!");
+    if (!currentName || currentName === "GAME OVER") {
+        console.error("❌ Error: No name displayed or game over!");
         return;
     }
 
@@ -106,27 +103,18 @@ function makeGuess(choice) {
     if (choice === "sicnarf") {
         // 🎲 Random 50/50 correctness for Sicnarf Button
         let isCorrect = Math.random() < 0.5;
-        if (isCorrect) {
-            console.log("🔥 Sicnarf Button: Randomly Correct!");
-            document.getElementById("result").textContent = "🔥 SICNARF!";
-            score++;
-        } else {
-            console.log("🔥 Sicnarf Button: Randomly Incorrect!");
-            document.getElementById("result").textContent = "❌ SICNARF?!";
-        }
+        document.getElementById("result").textContent = isCorrect ? "🔥 SICNARF!" : "❌ SICNARF?!";
+        if (isCorrect) score++;
     } else if (choice === correctAnswer) {
-        console.log("✅ Correct!");
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
-        // 🏆 Sicnarf Loopstok Mode Unlock Condition
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
             console.log("🎉 Sicnarf Mode Unlock Condition MET!");
             sicnarfModeUnlocked = true;
             activateSicnarfMode();
         }
     } else {
-        console.log("❌ Incorrect!");
         document.getElementById("result").textContent = "❌ Incorrect!";
     }
 
@@ -141,7 +129,6 @@ function makeGuess(choice) {
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
 
-    // Show Sicnarf Mode Unlocked Message
     let modeMessage = document.createElement("h1");
     modeMessage.innerHTML = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
     modeMessage.style.color = "red";
@@ -150,20 +137,15 @@ function activateSicnarfMode() {
     modeMessage.style.textShadow = "3px 3px 5px yellow";
     document.getElementById("game-container").prepend(modeMessage);
 
-    // 🎉 Confetti Explosion 🎉
     confetti({
         particleCount: 200,
         spread: 90,
         origin: { y: 0.6 }
     });
 
-    // Change background to Sicnarf's image
     document.body.style.backgroundImage = "url('sicnarf.jpeg')";
     document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
-    document.body.style.backgroundRepeat = "no-repeat";
 
-    // Add Sicnarf Button (Only Once)
     if (!document.getElementById("sicnarf-button")) {
         let sicnarfButton = document.createElement("button");
         sicnarfButton.id = "sicnarf-button";
@@ -179,9 +161,12 @@ function activateSicnarfMode() {
 
 function setNewQuestion() {
     let newName = getRandomName();
-    if (newName) {
-        document.getElementById("question").textContent = newName;
+    document.getElementById("question").textContent = newName;
+
+    if (newName === "GAME OVER") {
+        document.getElementById("buttons").style.display = "none";
+        document.getElementById("result").textContent = "You've seen all names!";
     } else {
-        endGame();
+        document.getElementById("buttons").style.display = "block";
     }
 }
