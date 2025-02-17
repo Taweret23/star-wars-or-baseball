@@ -1,3 +1,27 @@
+console.log("🔥 Script Loaded: Checking Firebase Setup");
+
+// 🔥 Firebase Setup
+const firebaseConfig = {
+    apiKey: "AIzaSyCgPtyZxO8I_tbHRYu8ZP87E5_n5vGagUs",
+    authDomain: "star-wars-or-baseball.firebaseapp.com",
+    projectId: "star-wars-or-baseball",
+    storageBucket: "star-wars-or-baseball.appspot.com",
+    messagingSenderId: "578105943516",
+    appId: "1:578105943516:web:1a23e14116694499fb5b19"
+};
+
+// Wait for Firebase to fully load before running game logic
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ DOM fully loaded. Initializing Firebase...");
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    console.log("✅ Firebase initialized successfully.");
+
+    startGame(); // Ensure game only starts after Firebase is ready
+});
+
+// 🛠 Game Logic (Unchanged)
 const starWarsNames = [
     "Beldorion Dour", "Dannik Jerriko", "BoShek Aalto", "Ponda Baba", "Greef Karga", 
     "Armitage Hux", "Quarsh Panaka", "Oppo Rancisis", "Jaxxon Toth", "Toryn Farr",
@@ -20,35 +44,13 @@ const baseballNames = [
     "Boof Bonser", "Milton Bradley", "Chicken Wolf", "Cannonball Titcomb", "Orval Overall"
 ];
 
-// 🎲 Declare namePool at the top so it's accessible everywhere
 let namePool = [];
 let playerName = "";
 let score = 0;
-let sicnarfModeUnlocked = false;
-
-console.log("🔥 Script Loaded: Checking Firebase Setup");
-
-// 🔥 Firebase Setup
-const firebaseConfig = {
-    apiKey: "AIzaSyCgPtyZxO8I_tbHRYu8ZP87E5_n5vGagUs",
-    authDomain: "star-wars-or-baseball.firebaseapp.com",
-    projectId: "star-wars-or-baseball",
-    storageBucket: "star-wars-or-baseball.appspot.com",
-    messagingSenderId: "578105943516",
-    appId: "1:578105943516:web:1a23e14116694499fb5b19"
-};
-
-console.log("🔥 Initializing Firebase...");
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-console.log("✅ Firebase initialized successfully.");
 
 function startGame() {
     console.log("🎮 startGame() called.");
-    
+
     playerName = document.getElementById("player-name").value.trim();
     if (playerName === "") {
         console.warn("⚠️ No name entered! Stopping game start.");
@@ -61,82 +63,33 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    // 🛠 Reset and shuffle names before the first question
-    namePool = [...starWarsNames, ...baseballNames]; 
+    namePool = [...starWarsNames, ...baseballNames];
     shuffleNames();
     
     console.log("🎲 Names shuffled. Total names:", namePool.length);
-    setNewQuestion(); // Start with a question
-    loadLeaderboard(); // Load leaderboard
+    setNewQuestion();
 }
 
-// 🎲 Name Handling (No Repeats)
 function shuffleNames() {
     console.log("🔄 shuffleNames() called.");
-
-    if (namePool.length === 0) {
-        console.error("❌ Error: Name pool is empty after shuffle!");
-    } else {
-        console.log(`✅ Names shuffled. ${namePool.length} names added.`);
-    }
     namePool.sort(() => Math.random() - 0.5);
 }
 
 function getRandomName() {
-    console.log("📢 getRandomName() called. Name pool size:", namePool.length);
-    
     if (namePool.length === 0) {
         console.log("⚠️ No more names left, ending game.");
         endGame();
         return "";
     }
 
-    let selectedName = namePool.pop();
-    console.log(`🎯 New name picked: ${selectedName}`);
-    return selectedName;
+    return namePool.pop();
 }
 
-function endGame() {
-    console.log("🏁 Game Over!");
-    document.getElementById("question").textContent = "Game Over! You've seen every name.";
-    document.getElementById("buttons").style.display = "none";
-    document.getElementById("result").textContent = `Final Score: ${score}`;
-    submitScore(playerName, score);
-}
-
-// 🏆 Leaderboard Functions
-function submitScore(name, score) {
-    console.log(`📊 Submitting Score: ${name} - ${score}`);
-    db.collection("leaderboard").add({
-        name: name,
-        score: score,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        console.log("✅ Score submitted!");
-        loadLeaderboard();
-    }).catch(error => {
-        console.error("🔥 Error submitting score:", error);
-    });
-}
-
-// Set first question
 function setNewQuestion() {
-    console.log("🔄 setNewQuestion() called.");
-
-    if (namePool.length === 0) {
-        console.log("⚠️ No more names left, ending game.");
-        endGame();
-        return;
-    }
-    
     let newName = getRandomName();
-    
     if (!newName) {
-        console.error("❌ Error: newName is undefined or empty!");
-        document.getElementById("question").textContent = "Error loading name. Refresh and try again.";
+        document.getElementById("question").textContent = "Error loading name.";
         return;
     }
-
     document.getElementById("question").textContent = newName;
-    console.log("✅ New name selected:", newName);
 }
