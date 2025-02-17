@@ -103,11 +103,10 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
-        // 🏆 Check for Sicnarf Loopstok Mode Unlock
-        if (currentName === "Sicnarf Loopstok" && !sicnarfModeUnlocked) {
+        // 🏆 Sicnarf Loopstok Mode Unlock Condition
+        if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
             sicnarfModeUnlocked = true;
-            console.log("🎉 Sicnarf Mode UNLOCKED! 🏆");
-            alert("🎉 Sicnarf Loopstok Mode UNLOCKED! 🏆");
+            activateSicnarfMode();
         }
     } else {
         console.log("❌ Incorrect!");
@@ -121,6 +120,7 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "";
     }, 1000);
 }
+
 
 function setNewQuestion() {
     let newName = getRandomName();
