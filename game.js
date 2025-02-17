@@ -82,8 +82,7 @@ function getRandomName() {
         endGame();
         return "";
     }
-
-    return namePool.pop();
+    return namePool.pop(); // 🔥 FIXED: This removes the name from the pool properly
 }
 
 function makeGuess(choice) {
@@ -105,7 +104,6 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
-        // 🏆 Sicnarf Loopstok Mode Unlock Condition
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
             sicnarfModeUnlocked = true;
             activateSicnarfMode();
@@ -123,11 +121,9 @@ function makeGuess(choice) {
     }, 1000);
 }
 
-// ** SICNARF MODE ACTIVATION **
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
 
-    // 🎉 Confetti Explosion 🎉
     confetti({
         particleCount: 200,
         spread: 90,
@@ -163,10 +159,20 @@ function activateSicnarfMode() {
 }
 
 function setNewQuestion() {
+    if (namePool.length === 0) {
+        console.log("🏁 Game Over!");
+        document.getElementById("question").textContent = "Game Over! You've seen every name.";
+        return;
+    }
+
     let newName = getRandomName();
+    
     if (!newName) {
+        console.error("❌ Error: newName is undefined or empty!");
         document.getElementById("question").textContent = "Error loading name.";
         return;
     }
+
+    console.log("🎲 New name selected:", newName);
     document.getElementById("question").textContent = newName;
 }
