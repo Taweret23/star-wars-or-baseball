@@ -26,12 +26,12 @@ let sicnarfModeUnlocked = false;
 
 // 🔥 Firebase Setup
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCgPtyZxO8I_tbHRYu8ZP87E5_n5vGagUs",
+    authDomain: "star-wars-or-baseball.firebaseapp.com",
+    projectId: "star-wars-or-baseball",
+    storageBucket: "star-wars-or-baseball.appspot.com",
+    messagingSenderId: "578105943516",
+    appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
 // Initialize Firebase
@@ -48,8 +48,9 @@ function startGame() {
     document.getElementById("name-entry").style.display = "none";
     document.getElementById("game").style.display = "block";
 
-    setNewQuestion();
-    loadLeaderboard();
+    shuffleNames(); // Make sure name pool is shuffled
+    setNewQuestion(); // Start with a question
+    loadLeaderboard(); // Load leaderboard
 }
 
 // 🎲 Name Handling (No Repeats)
