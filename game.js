@@ -2,7 +2,7 @@ console.log("🔥 Script Loaded: Checking Firebase Setup");
 
 // 🔥 Firebase Setup (using compat libraries)
 const firebaseConfig = {
-  apiKey: "AIzaSyCgPtyZxO8I_tbHRYu8ZP87E5_n5vGagUs",
+  apiKey: "AIzaSyCOTWE3R4z5vhZfl7OyKXJZvn8hCx55b_4",
   authDomain: "star-wars-or-baseball.firebaseapp.com",
   projectId: "star-wars-or-baseball",
   storageBucket: "star-wars-or-baseball.appspot.com",
