@@ -10,16 +10,8 @@ const firebaseConfig = {
     appId: "1:578105943516:web:1a23e14116694499fb5b19"
 };
 
-// Ensure Firebase initializes before starting the game
-let db;
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ DOM fully loaded. Initializing Firebase...");
-    
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    
-    console.log("✅ Firebase initialized successfully.");
-});
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // 🛠 Game Logic
 const starWarsNames = [
@@ -48,10 +40,11 @@ let namePool = [];
 let playerName = "";
 let score = 0;
 let sicnarfModeUnlocked = false;
+let gameOver = false;
 
 function startGame() {
     console.log("🎮 startGame() called.");
-
+    
     playerName = document.getElementById("player-name").value.trim();
     if (playerName === "") {
         console.warn("⚠️ No name entered! Stopping game start.");
@@ -82,10 +75,12 @@ function getRandomName() {
         endGame();
         return "";
     }
-    return namePool.pop(); // 🔥 FIXED: This removes the name from the pool properly
+    return namePool.pop();
 }
 
 function makeGuess(choice) {
+    if (gameOver) return; // Prevents scoring after game ends
+
     console.log(`🧐 makeGuess() called. Player chose: ${choice}`);
 
     let currentName = document.getElementById("question").textContent;
@@ -96,7 +91,6 @@ function makeGuess(choice) {
 
     let isStarWars = starWarsNames.includes(currentName);
     let isBaseball = baseballNames.includes(currentName);
-
     let correctAnswer = isStarWars ? "starwars" : "baseball";
     
     if (choice === correctAnswer) {
@@ -104,6 +98,7 @@ function makeGuess(choice) {
         document.getElementById("result").textContent = "✅ Correct!";
         score++;
 
+        // 🏆 Sicnarf Loopstok Mode Unlock Condition
         if (currentName === "Sicnarf Loopstok" && choice === "baseball" && !sicnarfModeUnlocked) {
             sicnarfModeUnlocked = true;
             activateSicnarfMode();
@@ -116,63 +111,76 @@ function makeGuess(choice) {
     document.getElementById("score").textContent = `Score: ${score}`;
 
     setTimeout(() => {
-        document.getElementById("result").textContent = "";
         setNewQuestion();
+        document.getElementById("result").textContent = "";
     }, 1000);
 }
 
 function activateSicnarfMode() {
     console.log("🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥");
 
-    confetti({
-        particleCount: 200,
-        spread: 90,
-        origin: { y: 0.6 }
-    });
+    confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
 
     document.body.style.backgroundImage = "url('sicnarf.jpeg')";
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
+
     document.getElementById("game-container").style.color = "gold";
     document.getElementById("game-container").style.textShadow = "3px 3px 5px red";
+
+    let message = document.createElement("h1");
+    message.textContent = "🔥 SICNARF LOOPSTOK MODE UNLOCKED 🔥";
+    message.style.color = "red";
+    message.style.fontSize = "2em";
+    message.style.textAlign = "center";
+    message.style.animation = "flash 1s infinite alternate";
+    
+    document.getElementById("game-container").prepend(message);
 
     let sicnarfButton = document.createElement("button");
     sicnarfButton.textContent = "Sicnarf Loopstok";
     sicnarfButton.style.backgroundColor = "red";
     sicnarfButton.style.color = "yellow";
-    sicnarfButton.style.fontWeight = "bold";
-    sicnarfButton.onclick = () => {
-        let outcomes = ["🔥 SICNARF!", "⁉️ SICNARF?!"];
-        let randomOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
-        document.getElementById("result").textContent = randomOutcome;
-        if (randomOutcome === "🔥 SICNARF!") {
-            score++;
-        }
-        document.getElementById("score").textContent = `Score: ${score}`;
-        setTimeout(() => {
-            document.getElementById("result").textContent = "";
-            setNewQuestion();
-        }, 1000);
-    };
+    sicnarfButton.onclick = () => makeSicnarfGuess();
 
     document.getElementById("buttons").appendChild(sicnarfButton);
+
+    let style = document.createElement("style");
+    style.innerHTML = `
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
-function setNewQuestion() {
-    if (namePool.length === 0) {
-        console.log("🏁 Game Over!");
-        document.getElementById("question").textContent = "Game Over! You've seen every name.";
-        return;
+function makeSicnarfGuess() {
+    if (gameOver) return;
+
+    let randomOutcome = Math.random() > 0.5 ? "✅ SICNARF!" : "❌ SICNARF!";
+    document.getElementById("result").textContent = randomOutcome;
+
+    if (randomOutcome.includes("✅")) {
+        score++;
     }
 
-    let newName = getRandomName();
-    
-    if (!newName) {
-        console.error("❌ Error: newName is undefined or empty!");
-        document.getElementById("question").textContent = "Error loading name.";
-        return;
-    }
+    document.getElementById("score").textContent = `Score: ${score}`;
 
-    console.log("🎲 New name selected:", newName);
-    document.getElementById("question").textContent = newName;
+    setTimeout(() => {
+        setNewQuestion();
+        document.getElementById("result").textContent = "";
+    }, 1000);
+}
+
+function endGame() {
+    gameOver = true;
+    document.getElementById("question").textContent = "Game Over! You've seen every name.";
+    document.getElementById("buttons").style.display = "none";
+    document.getElementById("result").textContent = `Final Score: ${score}`;
+    submitScore(playerName, score);
+}
+
+function submitScore(name, score) {
+    db.collection("leaderboard").add({ name, score, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
 }
